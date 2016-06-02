@@ -48,6 +48,8 @@ public class ResultsConverter implements Converter<RetrieveResult> {
                     retrieveResult.setType((String) value);
                 } else if ("Body".equals(nodeName)) {
                     retrieveResult.setBody((String) value);
+                } else if ("BodyLength".equals(nodeName)) {
+                    retrieveResult.setBodyLength((String) value);
                 } else {
                     InputNode nodeType = child.getAttribute("type");
                     if (nodeType != null) {

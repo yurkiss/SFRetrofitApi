@@ -14,7 +14,9 @@ import static com.ctmobile.okhttpxml.ServiceGenerator.START_URL;
 public class App extends Application {
 
     private String apiURL;
+    private String apiPostfix;
     private static App instance;
+    private SalesForceApi api;
 //    private Map<String, SalesForceApi> sf;
 
     @Override
@@ -41,12 +43,23 @@ public class App extends Application {
         if (apiURL == null){
             return ServiceGenerator.getSalesForceApi(START_URL);
         } else {
-            return ServiceGenerator.getSalesForceApi(apiURL);
+            if (api == null) {
+                api = ServiceGenerator.getSalesForceApi(apiURL);
+            }
+            return api;
         }
 
     }
 
-//    public SalesForceApi getSalesForceApi(String url) {
+    public String getApiPostfix() {
+        return apiPostfix;
+    }
+
+    public void setApiPostfix(String apiPostfix) {
+        this.apiPostfix = apiPostfix;
+    }
+
+    //    public SalesForceApi getSalesForceApi(String url) {
 //        if (sf == null){
 //            sf = new ArrayMap<>();
 //            sf.put(apiURL, ServiceGenerator.getSalesForceApi(START_URL));

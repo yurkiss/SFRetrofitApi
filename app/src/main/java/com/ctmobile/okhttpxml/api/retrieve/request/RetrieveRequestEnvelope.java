@@ -4,6 +4,7 @@ package com.ctmobile.okhttpxml.api.retrieve.request;
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.Namespace;
 import org.simpleframework.xml.NamespaceList;
+import org.simpleframework.xml.Order;
 import org.simpleframework.xml.Root;
 
 import java.io.Serializable;
@@ -21,6 +22,7 @@ import java.io.Serializable;
         @Namespace(prefix = "urn1", reference = "urn:partner.soap.sforce.com"),
         })
 @Namespace(reference = "http://schemas.xmlsoap.org/soap/envelope/")
+@Order(elements = {"Header", "Body"})
 public class RetrieveRequestEnvelope implements Serializable {
 
     @Element(name = "Header", required = false)

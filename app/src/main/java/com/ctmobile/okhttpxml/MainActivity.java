@@ -29,12 +29,19 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
+        
+        callLogin();
+        
+    }
 
-
+    private void callLogin() {
         NetworkCalls.login(new NetworkCalls.SFCallback<LoginResponseEnvelope>() {
             @Override
             public void onSuccess(LoginResponseEnvelope response) {
+                
                 handleLoginResponse(response);
+                callRetrieve();
+
             }
 
             @Override
@@ -42,8 +49,9 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(MainActivity.this, "Request error", Toast.LENGTH_SHORT).show();
             }
         });
+    }
 
-
+    private void callRetrieve() {
         NetworkCalls.retrieve(new NetworkCalls.SFCallback<RetrieveResponseEnvelope>() {
             @Override
             public void onSuccess(RetrieveResponseEnvelope response) {
@@ -55,9 +63,6 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(MainActivity.this, "Request error", Toast.LENGTH_SHORT).show();
             }
         });
-
-
-
     }
 
     private void handleLoginResponse(LoginResponseEnvelope envelope) {
@@ -72,4 +77,7 @@ public class MainActivity extends AppCompatActivity {
 
         }
     }
+    
+    
+    
 }

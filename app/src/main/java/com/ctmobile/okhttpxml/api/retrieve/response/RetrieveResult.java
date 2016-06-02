@@ -23,6 +23,7 @@ public class RetrieveResult {
     private String type;
     private boolean nil;
     public String Body;
+    public String BodyLength;
     private List<Field> fieldsList;
 
     public RetrieveResult() {
@@ -104,5 +105,13 @@ public class RetrieveResult {
 
     public void setBody(String body) {
         Body = body;
+    }
+
+    public String getBodyLength() {
+        return BodyLength;
+    }
+
+    public void setBodyLength(String bodyLength) {
+        BodyLength = bodyLength;
     }
 }

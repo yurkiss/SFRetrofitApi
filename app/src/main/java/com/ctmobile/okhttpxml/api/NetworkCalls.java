@@ -17,10 +17,15 @@ import com.ctmobile.okhttpxml.api.retrieve.request.RetrieveHeader;
 import com.ctmobile.okhttpxml.api.retrieve.request.RetrieveRequest;
 import com.ctmobile.okhttpxml.api.retrieve.request.RetrieveRequestEnvelope;
 import com.ctmobile.okhttpxml.api.retrieve.request.SessionHeader;
+import com.ctmobile.okhttpxml.api.retrieve.response.RetrieveResponse;
 import com.ctmobile.okhttpxml.api.retrieve.response.RetrieveResponseEnvelope;
+import com.ctmobile.okhttpxml.api.retrieve.response.RetrieveResult;
 
+import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.List;
 
+import hugo.weaving.DebugLog;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -33,6 +38,8 @@ import retrofit2.Response;
 public class NetworkCalls {
 
     public static final String TAG = NetworkCalls.class.getSimpleName();
+
+
 
     public interface SFCallback<T> {
         void onSuccess(T response);
@@ -95,7 +102,20 @@ public class NetworkCalls {
                 if (result != null) {
 
                     String newUrl = result.getServerUrl();
-                    App.getApp().setApiURL(newUrl);
+                    if (newUrl != null) {
+                        String com = ".com/";
+                        int index = newUrl.indexOf(com) + com.length();
+                        String postfix = newUrl.substring(index);
+                        String host = newUrl.substring(0, index);
+//                        if (!newUrl.endsWith("/")) {
+//                            newUrl = newUrl.concat("/");
+//                        }
+                        App.getApp().setApiURL(host);
+                        App.getApp().setApiPostfix(postfix);
+
+                    } else {
+                        //throw new UnknownHostException("Server url must be provided.");
+                    }
 
                     Session.getInstance().setSessionId(result.getSessionId());
 
@@ -115,6 +135,7 @@ public class NetworkCalls {
         }
     }
 
+
     public static void retrieve(final SFCallback<RetrieveResponseEnvelope> sfCallback){
 
         SalesForceApi sf = App.getApp().getSalesForceApi();
@@ -129,17 +150,18 @@ public class NetworkCalls {
 
         RetrieveBody body = new RetrieveBody();
         RetrieveRequest request = new RetrieveRequest();
-        request.setFieldList("Body");
+        request.setFieldList("Body,BodyLength");
         request.setsObjectType("Document");
         ArrayList<String> ids = new ArrayList<>();
-        ids.add("015g0000000DvDhAAK");
+        ids.add("015g0000000DvDnAAK");
+        ids.add("015g0000000YHOOAA4");
         request.setIds(ids);
         body.setRetrieveRequest(request);
 
         en.setBody(body);
 
         // asynchronous
-        Call<RetrieveResponseEnvelope> call = sf.retrieve(en);
+        Call<RetrieveResponseEnvelope> call = sf.retrieve(en, App.getApp().getApiPostfix());
         call.enqueue(new Callback<RetrieveResponseEnvelope>() {
             @Override
             public void onResponse(Call<RetrieveResponseEnvelope> call, Response<RetrieveResponseEnvelope> response) {
@@ -147,6 +169,17 @@ public class NetworkCalls {
                 if (response.isSuccessful()) {
                     RetrieveResponseEnvelope envelope = response.body();
                     //handleLoginResponse(envelope);
+                    RetrieveResponse retrieveResponse = envelope.getBody().getRetrieveResponse();
+                    if (retrieveResponse != null) {
+                        List<RetrieveResult> result = retrieveResponse.getResult();
+                        if (result != null) {
+                            for (RetrieveResult retrieveResult : result) {
+                                System.out.println("--------------------------------------");
+                                System.out.println("Received data length is " + retrieveResult.getBodyLength());
+
+                            }
+                        }
+                    }
                     sfCallback.onSuccess(envelope);
 
                 } else {
@@ -169,6 +202,8 @@ public class NetworkCalls {
             }
         });
 
+        System.out.println("--------------------------------------");
+        System.out.println("Request enqueued");
     }
 
 

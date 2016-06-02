@@ -1,6 +1,10 @@
 package com.ctmobile.okhttpxml;
 
+import org.simpleframework.xml.Serializer;
+import org.simpleframework.xml.convert.AnnotationStrategy;
 import org.simpleframework.xml.core.Persister;
+import org.simpleframework.xml.strategy.Strategy;
+import org.simpleframework.xml.strategy.TreeStrategy;
 import org.simpleframework.xml.stream.Format;
 
 import java.io.IOException;
@@ -20,8 +24,8 @@ import retrofit2.converter.simplexml.SimpleXmlConverterFactory;
 
 public class ServiceGenerator {
 
-    public static final String PROPERTY_URL = "https://cs17.salesforce.com";
-    public static final String START_URL = "https://test.salesforce.com";
+    public static final String START_URL = "https://test.salesforce.com/";
+    //public static final String PROPERTY_URL = "https://cs17.salesforce.com";
     //private static final String NAMESPACE = "urn:partner.soap.sforce.com";
     private static final int CONNECTION_TIMEOUT = 60 * 1000;
 
@@ -50,18 +54,22 @@ public class ServiceGenerator {
         // set your desired log level
         logging.setLevel(HttpLoggingInterceptor.Level.BODY);
         // add logging as last interceptor
-        httpClient.addNetworkInterceptor(logging);  // <-- this is the important line!
+        //httpClient.addNetworkInterceptor(logging);  // <-- this is the important line!
+        //httpClient.addInterceptor(logging);  // <-- this is the important line!
 
         return httpClient.build();
     }
 
     private static Retrofit provideXMLRetrofit(String url){
 
+        Strategy strategy = new AnnotationStrategy(new TreeStrategy());
+        //Serializer serializer = new Persister(strategy);
+
         Retrofit.Builder builder = new Retrofit.Builder()
             .baseUrl(url)
             .addConverterFactory(
                     SimpleXmlConverterFactory.create(
-                            new Persister(new Format("<?xml version=\"1.0\" encoding=\"utf-8\" ?>"))
+                            new Persister(strategy, new Format("<?xml version=\"1.0\" encoding=\"utf-8\" ?>"))
                     )
             );
 
